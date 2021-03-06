@@ -7,12 +7,13 @@ const MONGO_URL ='mongodb+srv://admin:kh4CM8pSvYXjI6Dp@mongodb.pfyo1.mongodb.net
 
 const server = async() =>{
     try{
-        await mongoose.connect(MONGO_URL,{useNewUrlParser: true,useUnifiedTopology: true,createIndexes:true});
+        await mongoose.connect(MONGO_URL,{useNewUrlParser: true,useUnifiedTopology: true,createIndexes:true,useFindAndModify:false});
+        mongoose.set('debug',true);
         console.log('MongoDB connected');
         //mongoose.connect(MONGO_URL).then(result => console.log({ result }))
 
-        app.use(express.json());
-
+        app.use(express.json()); 
+ 
         app.get('/user',async (req,res)=>{
             try{
                 const users = await User.find({});
@@ -35,11 +36,31 @@ const server = async() =>{
             }
         })
 
-        app.delete("/user/userId",async(req,res)=>{
+        app.delete("/user/:userId",async(req,res)=>{
             try{
                 const { userId } = req.params;
                 if(!mongoose.isValidObjectId(userId)) return res.status(400).send({err:"invalid userid"})
-                const user = await User.findOne({_id:userId});
+                const user = await User.findByIdAndDelete({_id:userId});
+                return res.send({user});
+            }catch(err){
+                console.log(err);
+                return res.status(500).send('server listening on port 3000'); 
+            }
+        })
+        
+        app.put("/user/:userId",async(req,res)=>{
+            try{
+                const { userId } = req.params;
+                if(!mongoose.isValidObjectId(userId)) return res.status(400).send({err:"invalid userid"});
+                const { age, name }=req.body;
+                if(!age && !name) return res.status(400).send({err:"age is required"});
+                if(age && typeof age !== 'number') return res.status(400).send({err:"age must be a number"});
+                if(name && typeof name.first !== 'string' && typeof name.last !== 'string') return res.status(400).send({err : "first and last"});
+                let updateBody ={};
+                if(age) updateBody.age = age;
+                if(name) updateBody.name = name; 
+
+                const user = await User.findByIdAndUpdate(userId , { age , nums },{new:true});
                 return res.send({user});
             }catch(err){
                 console.log(err);
