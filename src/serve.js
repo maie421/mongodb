@@ -35,6 +35,18 @@ const server = async() =>{
             }
         })
 
+        app.delete("/user/userId",async(req,res)=>{
+            try{
+                const { userId } = req.params;
+                if(!mongoose.isValidObjectId(userId)) return res.status(400).send({err:"invalid userid"})
+                const user = await User.findOne({_id:userId});
+                return res.send({user});
+            }catch(err){
+                console.log(err);
+                return res.status(500).send('server listening on port 3000'); 
+            }
+        })
+        
         app.post('/user',async (req,res)=>{
             try{
                 let {username, name} = req.body;
