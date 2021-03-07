@@ -25,6 +25,7 @@ userRouter.get("/:userId", async (req, res) => {
       return res.status(500).send({ err: err.message });
     }
   });
+
 userRouter.delete("/:userId",async(req,res)=>{
     try{
         const { userId } = req.params;
@@ -45,11 +46,16 @@ userRouter.put("/:userId",async(req,res)=>{
         if(!age && !name) return res.status(400).send({err:"age is required"});
         if(age && typeof age !== 'number') return res.status(400).send({err:"age must be a number"});
         if(name && typeof name.first !== 'string' && typeof name.last !== 'string') return res.status(400).send({err : "first and last"});
-        let updateBody ={};
+        /* let updateBody ={};
         if(age) updateBody.age = age;
         if(name) updateBody.name = name; 
 
-        const user = await User.findByIdAndUpdate(userId ,  updateBody ,{new:true});
+        const user = await User.findByIdAndUpdate(userId ,  updateBody ,{new:true});*/
+        let user = await User.findById(userId);
+        console.log({ userAfterEdit : user });
+        if (age) user.age = age;
+        if (name) uaer.name = name;
+        await user.save();
         return res.send({user});
     }catch(err){
         console.log(err);

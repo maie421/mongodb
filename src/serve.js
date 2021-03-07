@@ -1,6 +1,8 @@
 const express = require('express')
 const app = express()
-const {userRouter}= require('./routes/userRoute');
+const {userRouter} = require('./routes/userRoute');
+const {blogRouter} = require('./routes/blogRoute');
+
 const mongoose = require('mongoose');
 
 const MONGO_URL ='mongodb+srv://admin:kh4CM8pSvYXjI6Dp@mongodb.pfyo1.mongodb.net/BlogService?retryWrites=true&w=majority';
@@ -13,9 +15,7 @@ const server = async() =>{
         app.use(express.json());
 
         app.use('/user',userRouter);
- 
-        
-
+        app.use('/blog',blogRouter);
 
         app.listen(3000,()=>console.log('3000번 연결 '));
 
