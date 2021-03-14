@@ -1,8 +1,11 @@
 const { Router } = require('express');
 const { isValidObjectId } = require('mongoose');
 const blogRouter = Router();
-const {Blog} = require("../models/Blog");
-const { User } = require('../models/User');
+const { Blog , User} = require("../models");
+const {commentRouter} = require('./commnetRoute');
+
+
+blogRouter.use('/:blogId/commnet',commentRouter);
 
 blogRouter.post('/', async(req,res)=>{
     try{
